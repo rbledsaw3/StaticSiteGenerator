@@ -1,5 +1,5 @@
 import unittest
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 
 class TestHTMLNode(unittest.TestCase):
     def test_to_html_props(self):
@@ -39,74 +39,55 @@ class TestHTMLNode(unittest.TestCase):
                 "HTMLNode(p, What a strange world, children: None, {'class': 'primary'})",
        )
 
-"""
     def test_to_html(self):
-        node = HTMLNode(
-                "a",
-                "Click me",
-                None,
-                { "href": "https://boot.dev" },
-        )
-        self.assertEqual(
-                node.to_html(),
-                '<a href="https://boot.dev">Click me</a>',
-        )
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
-    def test_to_html_no_props(self):
+    def test_to_html_nested(self):
         node = HTMLNode(
-                "p",
-                "I'm a paragraph",
+                "div",
+                None,
+                [
+                    LeafNode("p", "Hello, world!"),
+                    LeafNode("p", "Goodbye, world!"),
+                ],
         )
         self.assertEqual(
                 node.to_html(),
-                "<p>I'm a paragraph</p>",
+                "<div><p>Hello, world!</p><p>Goodbye, world!</p></div>",
         )
 
     def test_to_html_no_children(self):
-        node = HTMLNode(
-                "div",
-                "I'm a div",
-        )
-        self.assertEqual(
-                node.to_html(),
-                "<div>I'm a div</div>",
-        )
+        node = HTMLNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
-    def test_to_html_children(self):
-        node = HTMLNode(
-                "div",
-                None,
-                [
-                    HTMLNode("p", "I'm a paragraph"),
-                    HTMLNode("p", "I'm another paragraph"),
-                ],
-        )
-        self.assertEqual(
-                node.to_html(),
-                "<div><p>I'm a paragraph</p><p>I'm another paragraph</p></div>",
-        )
+    def test_to_html_no_tag(self):
+        node = HTMLNode(None, "Hello, world!")
+        self.assertEqual(node.to_html(), "Hello, world!")
 
-    def test_to_html_nested_children(self):
-        node = HTMLNode(
-                "div",
-                None,
-                [
-                    HTMLNode(
-                        "div",
-                        None,
-                        [
-                            HTMLNode("p", "I'm a paragraph"),
-                            HTMLNode("p", "I'm another paragraph"),
-                        ],
-                    ),
-                    HTMLNode("p", "I'm a paragraph"),
-                ],
-        )
-        self.assertEqual(
-                node.to_html(),
-                "<div><div><p>I'm a paragraph</p><p>I'm another paragraph</p></div><p>I'm a paragraph</p></div>",
-        )
-"""
+    def test_to_html_no_props(self):
+        node = HTMLNode("div", "Hello, world!")
+        self.assertEqual(node.to_html(), "<div>Hello, world!</div>")
+
+    def test_to_html_no_props_or_children(self):
+        node = HTMLNode("div", "Hello, world!")
+        self.assertEqual(node.to_html(), "<div>Hello, world!</div>")
+
+    def test_leaf_node(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.tag, "p")
+        self.assertEqual(node.value, "Hello, world!")
+        self.assertIsNone(node.children)
+        self.assertIsNone(node.props)
+
+    def test_leaf_node_to_html(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_node_to_html_no_tag(self):
+        node = LeafNode(None, "Hello, world!")
+        self.assertEqual(node.to_html(), "Hello, world!")
+
 
 if __name__ == "__main__":
     unittest.main()
