@@ -3,6 +3,7 @@ from inline_markdown import (
     split_nodes_delimiter,
     split_nodes_image,
     split_nodes_link,
+    text_to_textnodes,
     extract_markdown_images,
     extract_markdown_links,
 )
@@ -174,6 +175,27 @@ class TestInlineMarkdown(unittest.TestCase):
             ],
             new_nodes,
         )
+
+    def test_text_to_textnodes(self):
+        nodes = text_to_textnodes(
+            "This is **text** with an *italic* word and a `code block` and a [link](https://www.google.com) and an ![image](https://i.imgur.com/zjjcJKZ.png)"
+        )
+        self.assertListEqual(
+            [
+                TextNode("This is ", TextType.TEXT),
+                TextNode("text", TextType.BOLD),
+                TextNode(" with an ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+                TextNode(" word and a ", TextType.TEXT),
+                TextNode("code block", TextType.CODE),
+                TextNode(" and a ", TextType.TEXT),
+                TextNode("link", TextType.LINK, "https://www.google.com"),
+                TextNode(" and an ", TextType.TEXT),
+                TextNode("image", TextType.IMAGE, "https://i.imgur.com/zjjcJKZ.png"),
+            ],
+            nodes,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
